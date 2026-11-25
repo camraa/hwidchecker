@@ -55,12 +55,7 @@ namespace HwidChecker
                 s.Ram = 100.0 * (m.Total - m.Avail) / m.Total;
                 s.RamText = Gb(m.Total - m.Avail) + " / " + Gb(m.Total);
             }
-            if (!nvTried)
-            {
-                nvTried = true;
-                try { if (nvmlInit_v2() != 0 || nvmlDeviceGetHandleByIndex_v2(0, out nv) != 0) nv = IntPtr.Zero; }
-                catch { nv = IntPtr.Zero; } // pas de pilote NVIDIA
-            }
+            InitNvml();
             if (nv != IntPtr.Zero)
             {
                 Util u; Mem v; uint t;
@@ -79,6 +74,21 @@ namespace HwidChecker
             if (!zoneOff && tick++ % 2 == 0) lastZone = Zone();
             s.ZoneTemp = lastZone;
             return s;
+        }
+
+        static void InitNvml()
+        {
+            if (nvTried) return;
+            nvTried = true;
+            try { if (nvmlInit_v2() != 0 || nvmlDeviceGetHandleByIndex_v2(0, out nv) != 0) nv = IntPtr.Zero; }
+            catch { nv = IntPtr.Zero; } // pas de pilote NVIDIA
+        }
+
+        public static double GpuTemperature()
+        {
+            uint t;
+            InitNvml();
+            return nv != IntPtr.Zero && nvmlDeviceGetTemperature(nv, 0, out t) == 0 ? t : double.NaN;
         }
 
         static string Gb(ulong b) { return (b / 1073741824.0).ToString("0.0", CultureInfo.GetCultureInfo("fr-FR")) + " Go"; }

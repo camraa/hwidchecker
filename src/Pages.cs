@@ -83,7 +83,7 @@ namespace HwidChecker
 
     public partial class App
     {
-        public const string VersionText = "1.1.1";
+        public const string VersionText = "1.2.0";
         const string Repo = "https://github.com/camraa/hwidchecker";
 
         // ================= anti-triche =================
@@ -111,6 +111,7 @@ namespace HwidChecker
             var p = PageRoot();
             p.Children.Add(Hero("game", "#BF5AF2", "Anti-triche",
                 "Compare ce PC aux conditions publiées par chaque anti-triche. Elles évoluent : la page officielle fait foi.", null));
+            p.Children.Add(BiosCard());
             foreach (var a in AntiCheat.Evaluate(report))
             {
                 var rows = new List<UIElement>

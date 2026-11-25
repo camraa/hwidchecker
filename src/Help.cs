@@ -61,6 +61,18 @@ namespace HwidChecker
             { "Secteurs en attente", "Secteurs instables que le disque doit encore vérifier." },
             { "Secteurs illisibles", "Secteurs que le disque n’a pas pu relire." },
 
+            // Batterie
+            { "battery|Santé", "Capacité actuelle comparée à la capacité d’origine. En dessous de 75 %, l’autonomie baisse nettement." },
+            { "battery|Numéro de série (SN)", "Numéro transmis par la batterie. Beaucoup de portables ne le communiquent pas." },
+            { "Technologie", "Type de cellules de la batterie." },
+            { "Capacité d’origine", "Énergie que la batterie pouvait stocker neuve." },
+            { "Capacité actuelle", "Énergie que la batterie peut stocker aujourd’hui, pleine." },
+            { "Cycles de charge", "Nombre de charges complètes équivalentes. Certains portables ne le communiquent pas." },
+            { "Charge", "Niveau de charge au moment du relevé." },
+            { "Alimentation", "Source d’énergie au moment du relevé." },
+            { "Tension", "Tension mesurée aux bornes de la batterie." },
+            { "Consommation", "Puissance tirée de la batterie au moment du relevé." },
+
             // RAM
             { "Fréquence", "Vitesse à laquelle la barrette fonctionne actuellement." },
             { "Emplacement", "Connecteur de la carte mère où se trouve la barrette." },
@@ -149,6 +161,7 @@ namespace HwidChecker
             if (section == "arp") return "Appareil du réseau local : son adresse IP à gauche, son adresse MAC à droite." +
                 (label.Contains("Passerelle") ? " Celui-ci est la box ou le routeur." : "") +
                 (label.Contains("aléatoire") ? " Son adresse MAC n’est pas celle d’usine : l’appareil la génère, comme le font les smartphones récents." : "");
+            if (section == "startup") return "Programme lancé à l’ouverture de session. Impact élevé : plus d’une seconde de processeur ou 3 Mo lus au démarrage, d’après Windows.";
             if (label.StartsWith("Volume ")) return "Numéro attribué à la partition lors de son formatage. Il change à chaque formatage.";
             return null;
         }

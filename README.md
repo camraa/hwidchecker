@@ -14,6 +14,12 @@ Lecteur d'identifiants matériels pour Windows 10 et 11, avec une interface insp
 - **Anti-triche** : conditions des tournois Fortnite, de Vanguard, FACEIT, Ricochet, EA Javelin, Easy Anti-Cheat et BattlEye, avec la page officielle
 - **En direct** : charge et températures du processeur, de la RAM et du GPU
 - **Historique** : référence enregistrée et changements détectés à chaque lancement
+- **Batterie** : capacité réelle, usure, cycles
+- **Démarrage** : programmes lancés avec Windows et leur impact
+- **Test réseau** : ping, pertes, gigue et DNS
+- **Alertes** : disque qui faiblit, composant trop chaud, MAC ou identifiant modifié
+- **Comparer deux PC** : différences avec l'export JSON d'un autre PC
+- **Diagnostic** : rapport technique sans identifiant, à envoyer en cas de bug
 - **Partager** : image du PC à coller dans Discord, identifiants masqués par défaut
 - **Ressources** : liens vers Sordum, WinRAR et WinUtil
 
@@ -33,6 +39,7 @@ Les identifiants restent sur le PC. L'application contacte :
 - `catalog.update.microsoft.com`, pour le BIOS au lancement (identifiant de modèle du micrologiciel) et, pendant l'analyse, pour les pilotes (identifiants de modèle)
 - `api.github.com`, pour signaler une nouvelle version (désactivable dans Apparence)
 - `standards-oui.ieee.org`, seulement si vous téléchargez la base des fabricants
+- les serveurs du test réseau (Cloudflare, Google, Quad9, Epic Games, AWS), seulement quand vous le lancez
 - Windows Update et NVIDIA, pendant l'analyse des pilotes
 
 Aucun numéro de série n'est envoyé.

@@ -161,7 +161,11 @@ namespace HwidChecker
                     foreach (ManagementObject o in s.Get()) list.Add(o);
                 }
             }
-            catch { /* classe absente ou acces refuse : la section reste vide */ }
+            catch (Exception e)
+            {
+                // Classe absente ou acces refuse : la section reste vide.
+                Diag.Error(Regex.Match(wql, @"FROM (\w+)").Groups[1].Value, e);
+            }
             return list;
         }
 
@@ -257,7 +261,7 @@ namespace HwidChecker
             var r = new Report { Date = DateTime.Now, PcName = Environment.MachineName };
 
             ResetDriverCache();
-            var tasks = new Func<Section>[] { Board, Gpu, Cpu, Disks, Memory, Displays, Peripherals, MacAddresses, Ip, Arp, Security, WindowsInfo }
+            var tasks = new Func<Section>[] { Board, Gpu, Cpu, Disks, Memory, Displays, Peripherals, Battery, MacAddresses, Ip, Arp, Security, Startup, WindowsInfo }
                 .Select(f => Task.Run(() => Safe(f))).ToArray();
             Task.WaitAll(tasks);
             r.Sections.AddRange(tasks.Select(t => t.Result).Where(s => s != null));
@@ -279,7 +283,7 @@ namespace HwidChecker
 
         static Section Safe(Func<Section> f)
         {
-            try { return f(); } catch { return null; }
+            try { return f(); } catch (Exception e) { Diag.Error(f.Method.Name, e); return null; }
         }
 
         static void Fingerprint(Report r)

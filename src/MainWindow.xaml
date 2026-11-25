@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="HWID Checker" Width="1096" Height="972" MinWidth="876" MinHeight="616"
+        Title="HWID Checker" Width="1096" Height="1000" MinWidth="876" MinHeight="616"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen" UseLayoutRounding="True" SnapsToDevicePixels="True"
         FontFamily="SF Pro Text, Inter, Segoe UI Variable Text, Segoe UI" FontSize="13"
@@ -117,14 +117,14 @@
     <!-- Element de la barre laterale -->
     <Style x:Key="SideItem" TargetType="RadioButton">
       <Setter Property="GroupName" Value="side"/>
-      <Setter Property="Height" Value="31"/>
+      <Setter Property="Height" Value="28"/>
       <Setter Property="Margin" Value="0,0,0,1"/>
       <Setter Property="Foreground" Value="{DynamicResource Text}"/>
       <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="RadioButton">
-            <Border x:Name="b" Background="Transparent" CornerRadius="10" Padding="8,0">
+            <Border x:Name="b" Background="Transparent" CornerRadius="9" Padding="8,0">
               <ContentPresenter VerticalAlignment="Center"/>
             </Border>
             <ControlTemplate.Triggers>

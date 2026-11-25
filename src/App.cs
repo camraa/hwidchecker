@@ -26,8 +26,8 @@ using Microsoft.Win32;
 [assembly: AssemblyProduct("HWID Checker")]
 [assembly: AssemblyCompany("1skf")]
 [assembly: AssemblyCopyright("Made by 1skf (Discord)")]
-[assembly: AssemblyVersion("1.1.1.0")]
-[assembly: AssemblyFileVersion("1.1.1.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
 
 namespace HwidChecker
@@ -39,6 +39,7 @@ namespace HwidChecker
         public bool Mask { get; set; }
         public string Lang { get; set; }    // fr ou en ; vide = langue de Windows
         public bool SkipUpdateCheck { get; set; }
+        public bool NoAlerts { get; set; }
         public string ReferenceDate { get; set; }
         public Dictionary<string, string> Reference { get; set; }
 
@@ -102,6 +103,9 @@ namespace HwidChecker
             { "link", "M10 14 L20 4 M14 4 H20 V10 M17.5 14 V18.5 A1.5 1.5 0 0 1 16 20 H5.5 A1.5 1.5 0 0 1 4 18.5 V8 A1.5 1.5 0 0 1 5.5 6.5 H10" },
             { "game", "M8 8 H16 A5 5 0 0 1 21 13 V14.5 A3 3 0 0 1 15.6 16.3 L15 15.5 H9 L8.4 16.3 A3 3 0 0 1 3 14.5 V13 A5 5 0 0 1 8 8 Z M8.5 10.5 V13.5 M7 12 H10 M15.5 11 V11.1 M17.3 13 V13.1" },
             { "live", "M3 12.5 H7 L9.5 6 L14 18 L16.5 12.5 H21" },
+            { "battery", "M4.5 7.5 H16.5 A2 2 0 0 1 18.5 9.5 V14.5 A2 2 0 0 1 16.5 16.5 H4.5 A2 2 0 0 1 2.5 14.5 V9.5 A2 2 0 0 1 4.5 7.5 Z M21.5 10.8 V13.2 M6 10.5 V13.5 M9.5 10.5 V13.5 M13 10.5 V13.5" },
+            { "startup", "M12 3.5 V12 M7.2 6.2 A8 8 0 1 0 16.8 6.2" },
+            { "ping", "M4 20 V16 M9.3 20 V12.5 M14.6 20 V9 M20 20 V4.5" },
             { "search", "M10.5 4 A6.5 6.5 0 1 1 10.5 17 A6.5 6.5 0 1 1 10.5 4 Z M15.5 15.5 L20.5 20.5" },
             { "eye", "M2.5 12 C5 7.5 8.2 5.5 12 5.5 C15.8 5.5 19 7.5 21.5 12 C19 16.5 15.8 18.5 12 18.5 C8.2 18.5 5 16.5 2.5 12 Z M12 9 A3 3 0 1 1 12 15 A3 3 0 1 1 12 9 Z" },
             { "eyeoff", "M2.5 12 C5 7.5 8.2 5.5 12 5.5 C15.8 5.5 19 7.5 21.5 12 C19 16.5 15.8 18.5 12 18.5 C8.2 18.5 5 16.5 2.5 12 Z M12 9 A3 3 0 1 1 12 15 A3 3 0 1 1 12 9 Z M4.5 20 L19.5 4" },
@@ -252,6 +256,8 @@ namespace HwidChecker
                 btn.IsEnabled = Get<Button>("BtnCopy").IsEnabled = Get<Button>("BtnExport").IsEnabled = true;
             }
             if (first) history.Record(report.Flatten(), report.Date);
+            BuildAlerts();
+            StartWatch();
             BuildSidebar();
             Render(first);
             CheckBios();
@@ -349,6 +355,7 @@ namespace HwidChecker
             return new JavaScriptSerializer().Serialize(new
             {
                 date = report.Date.ToString("s"), ordinateur = report.PcName, modele = report.Model, empreinte = report.Fingerprint,
+                comparaison = Comparable(true).ToDictionary(x => x.Key, x => x.Value[0]),
                 sections = report.Sections.Select(s => new
                 {
                     titre = L.T(s.Title),
@@ -610,6 +617,7 @@ namespace HwidChecker
                 {
                     if (s.Category != cat) AddHeader(cat = s.Category);
                     AddItem(s.Key, s.Title, s.Icon, s.Color);
+                    if (s.Key == "arp") AddItem("net", "Test réseau", "ping", "#34C759");
                 }
             if (report != null)
             {
@@ -627,14 +635,14 @@ namespace HwidChecker
         void AddHeader(string t)
         {
             var b = Text(t, 11.5, "Text2", true);
-            b.Margin = new Thickness(8, 11, 0, 4);
+            b.Margin = new Thickness(8, 8, 0, 3);
             side.Children.Add(b);
         }
 
         void AddItem(string key, string title, string icon, string color)
         {
             var p = new StackPanel { Orientation = Orientation.Horizontal };
-            p.Children.Add(Tile(icon, color, 22));
+            p.Children.Add(Tile(icon, color, 20));
             p.Children.Add(new TextBlock { Text = L.T(title), Margin = new Thickness(9, 0, 0, 1), VerticalAlignment = VerticalAlignment.Center });
             var r = new RadioButton { Content = p, Style = (Style)w.Resources["SideItem"] };
             AutomationProperties.SetName(r, L.T(title));
@@ -677,6 +685,7 @@ namespace HwidChecker
                 else if (page == "compare") { p = ComparePage(); title = "Historique"; }
                 else if (page == "anticheat") { p = AntiCheatPage(); title = "Anti-triche"; }
                 else if (page == "live") { p = LivePage(); title = "En direct"; }
+                else if (page == "net") { p = NetPage(); title = "Test réseau"; }
                 else if (page == "share") { p = SharePage(); title = "Partager"; }
                 else
                 {
@@ -768,6 +777,8 @@ namespace HwidChecker
             hero.Children.Add(fp);
             p.Children.Add(Card(hero));
 
+            if (alerts.Count > 0) AddGroup(p, "Alertes", null, alerts.Select(a => (UIElement)Row(a, false)));
+
             AddGroup(p, "Identifiants principaux", null, report.Summary.Select(s => SummaryRow(s)));
 
             string[] sys = { "Version de Windows", "Build", "Type de licence", "Activation", "Version du BIOS", "Date du firmware actuel", "Dernière mise à jour" };
@@ -853,6 +864,7 @@ namespace HwidChecker
                 AddGroup(p, g.Title, g.Sub, g.Fields.Select(f => (UIElement)Row(f, s.Key == "arp")));
             if (s.Groups.Count == 0) p.Children.Add(Note(s.Empty));
             if (s.Key == "arp") p.Children.Insert(1, OuiCard());
+            if (s.Key == "startup") p.Children.Insert(1, StartupCard());
             return p;
         }
 
@@ -942,6 +954,7 @@ namespace HwidChecker
                     Row(new Field { Label = "Avant", Value = x[1] ?? "Absent", IsId = x[1] != null }, false),
                     Row(new Field { Label = "Maintenant", Value = x[2] ?? "Absent", IsId = x[2] != null }, false)
                 });
+            ComparePcCard(p);
             HistoryList(p);
             return p;
         }
@@ -1162,6 +1175,15 @@ namespace HwidChecker
             {
                 SettingRow("Version de HWID Checker", "Compare cette version à celles publiées sur GitHub. Rien n’est téléchargé ni installé sans vous.", up),
                 SettingRow("Vérifier au démarrage", "Interroge GitHub une fois à chaque lancement.", auto)
+            });
+            var al = new CheckBox { Style = (Style)w.Resources["Switch"], IsChecked = !cfg.NoAlerts };
+            al.Click += (s, e) => { cfg.NoAlerts = al.IsChecked != true; cfg.Save(); if (report != null) BuildAlerts(); };
+            var diag = Capsule("Copier le diagnostic", false, CopyDiagnostic);
+            AutomationProperties.SetAutomationId(diag, "diag");
+            AddGroup(p, "Alertes et aide", null, new[]
+            {
+                SettingRow("Alertes", "Prévient si un disque faiblit, si un composant chauffe trop, ou si une adresse MAC ou un identifiant change. Actif tant que l’application est ouverte.", al),
+                SettingRow("Diagnostic", "Rapport technique à envoyer en cas de bug : versions, mesures et erreurs. Il ne contient aucun identifiant, nom ni adresse.", diag)
             });
             AddGroup(p, "Confidentialité", null, new[]
             {
