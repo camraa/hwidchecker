@@ -1,0 +1,40 @@
+# Publie une Release avec l'exe quand le numero de version (VersionText) n'a pas encore de Release.
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publier la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(grep -oP 'VersionText = "\K[0-9]+\.[0-9]+\.[0-9]+' src/Pages.cs)
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "v$version est deja publiee"
+            exit 0
+          fi
+          cp "HWID Checker.exe" HWID-Checker.exe
+          sha256sum HWID-Checker.exe > HWID-Checker.exe.sha256
+          {
+            echo "Téléchargez **HWID-Checker.exe** ci-dessous. Windows 10 ou 11, rien à installer."
+            echo
+            echo "L'exe n'est pas signé : SmartScreen peut afficher un avertissement au premier lancement."
+            echo
+            echo "SHA-256 : \`$(cut -d' ' -f1 HWID-Checker.exe.sha256)\`"
+            echo
+            echo "Made by **1skf** sur Discord."
+          } > notes.md
+          gh release create "v$version" HWID-Checker.exe HWID-Checker.exe.sha256 \
+            --title "HWID Checker $version" --notes-file notes.md --target "$GITHUB_SHA"

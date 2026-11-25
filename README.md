@@ -1,7 +1,7 @@
 # HWID Checker
 
 Lecteur d'identifiants matériels pour Windows 10 et 11, avec une interface inspirée de macOS 27 (Liquid Glass).
-Un seul fichier : **[HWID Checker.exe](HWID%20Checker.exe)**. Rien à installer, lecture seule. Les droits administrateur sont demandés au lancement, pour lire les compteurs SMART des disques.
+**[Télécharger HWID-Checker.exe](https://github.com/camraa/hwidchecker/releases/latest/download/HWID-Checker.exe)** (un seul fichier). Rien à installer, lecture seule. Les droits administrateur sont demandés au lancement, pour lire les compteurs SMART des disques.
 
 ## Contenu
 
