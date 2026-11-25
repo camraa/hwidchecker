@@ -47,6 +47,20 @@ namespace HwidChecker
             { "Niveau", "Nom et mode de résilience de la grappe : simple (RAID 0), miroir (RAID 1) ou parité (RAID 5)." },
             { "UUID de la grappe", "Identifiant unique de la grappe de disques." },
 
+            // Sante des disques
+            { "Santé", "État du disque d’après ses propres compteurs (SMART). Le pourcentage d’un SSD est sa durée de vie restante estimée par le fabricant." },
+            { "Température", "Température actuelle mesurée par le disque." },
+            { "Usure", "Part de la durée de vie prévue déjà consommée." },
+            { "Réserve disponible", "Blocs de secours encore libres pour remplacer des cellules usées." },
+            { "Heures de fonctionnement", "Temps total pendant lequel le disque a été alimenté." },
+            { "Démarrages", "Nombre de mises sous tension du disque." },
+            { "Arrêts non sécurisés", "Coupures d’alimentation sans arrêt propre." },
+            { "Données écrites", "Volume total écrit depuis la mise en service." },
+            { "Erreurs de support", "Erreurs de données que le disque n’a pas pu corriger. La valeur normale est 0." },
+            { "Secteurs réalloués", "Secteurs défectueux remplacés par des secteurs de réserve. Un nombre qui augmente annonce une panne." },
+            { "Secteurs en attente", "Secteurs instables que le disque doit encore vérifier." },
+            { "Secteurs illisibles", "Secteurs que le disque n’a pas pu relire." },
+
             // RAM
             { "Fréquence", "Vitesse à laquelle la barrette fonctionne actuellement." },
             { "Emplacement", "Connecteur de la carte mère où se trouve la barrette." },
@@ -83,6 +97,9 @@ namespace HwidChecker
             { "TPM 2.0", "Puce de sécurité qui protège les clés de chiffrement (BitLocker, Windows Hello). Exigée par Windows 11 et par certains anti-triche." },
             { "Secure Boot", "Démarrage sécurisé : l’UEFI refuse de lancer un système ou un pilote de démarrage non signé." },
             { "IOMMU / VT-d", "Contrôle les accès directs à la mémoire (DMA) des cartes PCIe et Thunderbolt. Détecté par la table ACPI DMAR (Intel) ou IVRS (AMD), publiée quand la fonction est active dans le BIOS." },
+            { "Démarrage UEFI", "Mode de démarrage du PC. Secure Boot n’existe qu’en mode UEFI." },
+            { "Disque système GPT", "Type de table de partitions du disque Windows. Le mode UEFI demande une table GPT." },
+            { "Signature des pilotes", "Windows n’accepte que des pilotes signés. Le mode test lève cette règle et bloque la plupart des anti-triche." },
             { "Hyperviseur", "Couche de virtualisation sous Windows (Hyper-V). Nécessaire à VBS et à HVCI. Actif aussi si ce PC est lui-même une machine virtuelle." },
             { "Virtualisation du processeur", "Extensions VT-x ou AMD-V du processeur, activées dans le BIOS." },
             { "Sécurité par virtualisation (VBS)", "Isole une partie du noyau Windows dans une zone protégée par l’hyperviseur." },

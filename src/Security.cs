@@ -18,6 +18,19 @@ namespace HwidChecker
         [DllImport("kernel32.dll")]
         static extern uint EnumSystemFirmwareTables(uint provider, byte[] buf, uint size);
 
+        [DllImport("kernel32.dll")]
+        static extern bool GetFirmwareType(out int type);
+
+        public static int Build
+        {
+            get
+            {
+                int b;
+                int.TryParse(Reg(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion", "CurrentBuildNumber"), out b);
+                return b;
+            }
+        }
+
         static string TpmVersion()
         {
             try
@@ -51,13 +64,19 @@ namespace HwidChecker
             var cpu = One("SELECT Manufacturer, VirtualizationFirmwareEnabled FROM Win32_Processor");
             bool amd = Str(cpu, "Manufacturer") == "AuthenticAMD";
 
+            int firmware;
+            bool uefi = GetFirmwareType(out firmware) && firmware == 2;
+            bool gpt = Query("SELECT Type FROM Win32_DiskPartition WHERE DiskIndex=" + SystemDiskIndex()).Any(x => Str(x, "Type").StartsWith("GPT"));
+
             s.Groups.Add(new Group("Micrologiciel et matériel", "Réglages du BIOS / UEFI")
                 .Status("TPM 2.0", tpm == "TPM 2.0" ? "on" : tpm.Length > 0 ? "warn" : "off",
                         tpm == "TPM 2.0" ? "Présent et actif" : tpm.Length > 0 ? tpm + " seulement" : "Absent ou désactivé")
                 .Status("Secure Boot", sb == "1" ? "on" : "off",
                         sb == "1" ? "Activé" : sb == "0" ? "Désactivé" : "Non pris en charge")
                 .Status("IOMMU / VT-d", iommu ? "on" : "off",
-                        iommu ? (amd ? "Activé (AMD-Vi)" : "Activé (Intel VT-d)") : "Désactivé ou absent"));
+                        iommu ? (amd ? "Activé (AMD-Vi)" : "Activé (Intel VT-d)") : "Désactivé ou absent")
+                .Status("Démarrage UEFI", uefi ? "on" : "off", uefi ? "Mode UEFI" : "Mode hérité (BIOS)")
+                .Status("Disque système GPT", gpt ? "on" : "off", gpt ? "Table GPT" : "Table MBR"));
 
             // --- virtualisation ---
             int ret;
@@ -79,7 +98,8 @@ namespace HwidChecker
                 .Status("Sécurité par virtualisation (VBS)", vbs == "2" ? "on" : vbs == "1" ? "warn" : "off",
                         vbs == "2" ? "Active" : vbs == "1" ? "Configurée, inactive" : "Inactive")
                 .Status("Virtualisation du processeur", vtx ? "on" : "off",
-                        (vtx ? "Activée" : "Désactivée") + (amd ? " (AMD-V)" : " (Intel VT-x)")));
+                        (vtx ? "Activée" : "Désactivée") + (amd ? " (AMD-V)" : " (Intel VT-x)"))
+                .Status("Signature des pilotes", (options & 2) == 0 ? "on" : "off", (options & 2) == 0 ? "Exigée" : "Mode test activé"));
 
             // --- antivirus : la classe Defender ne repond pas quand le service est arrete ---
             var mp = Query("SELECT * FROM MSFT_MpComputerStatus", @"root\Microsoft\Windows\Defender").FirstOrDefault();

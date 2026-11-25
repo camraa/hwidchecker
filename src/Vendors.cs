@@ -106,6 +106,8 @@ namespace HwidChecker
         {
             string v = Get(mac, address.Substring(0, 8));
             if (v.Length > 0) return v;
+            v = Oui.Lookup(address);
+            if (v.Length > 0) return v;
             // 2e bit du premier octet : adresse administree localement
             return (Convert.ToByte(address.Substring(0, 2), 16) & 2) != 0 ? "MAC aléatoire" : "";
         }

@@ -1,7 +1,7 @@
 # HWID Checker
 
 Lecteur d'identifiants matériels pour Windows 10 et 11, avec une interface inspirée de macOS 27 (Liquid Glass).
-Un seul fichier : **[HWID Checker.exe](HWID%20Checker.exe)**. Rien à installer, aucun droit administrateur, lecture seule.
+Un seul fichier : **[HWID Checker.exe](HWID%20Checker.exe)**. Rien à installer, lecture seule. Les droits administrateur sont demandés au lancement, pour lire les compteurs SMART des disques.
 
 ## Contenu
 
@@ -10,7 +10,11 @@ Un seul fichier : **[HWID Checker.exe](HWID%20Checker.exe)**. Rien à installer,
 - **Sécurité** : TPM 2.0, Secure Boot, IOMMU / VT-d, hyperviseur, HVCI, intégrité de la mémoire, Windows Defender
 - **Windows et BIOS** : version, type de licence, activation, version et date du BIOS, lien vers le dernier BIOS publié
 - **Pilotes** : version et date de chaque pilote, comparées à Windows Update, au catalogue Microsoft Update et à NVIDIA
-- **Comparaison** : enregistre une référence et signale tout identifiant modifié
+- **Santé des disques** : usure, température, heures de fonctionnement, erreurs (NVMe et SMART)
+- **Anti-triche** : conditions de Vanguard, FACEIT, Ricochet, EA Javelin, Easy Anti-Cheat et BattlEye, avec la page officielle
+- **En direct** : charge et températures du processeur, de la RAM et du GPU
+- **Historique** : référence enregistrée et changements détectés à chaque lancement
+- **Partager** : image du PC à coller dans Discord, identifiants masqués par défaut
 - **Ressources** : liens vers Sordum, WinRAR et WinUtil
 
 Un point d'information à côté de chaque donnée explique à quoi elle correspond.
@@ -27,6 +31,8 @@ Les identifiants restent sur le PC. L'application contacte :
 
 - `api.ipify.org` et `api6.ipify.org`, pour l'adresse IP publique
 - `catalog.update.microsoft.com`, pour le BIOS au lancement (identifiant de modèle du micrologiciel) et, pendant l'analyse, pour les pilotes (identifiants de modèle)
+- `api.github.com`, pour signaler une nouvelle version (désactivable dans Apparence)
+- `standards-oui.ieee.org`, seulement si vous téléchargez la base des fabricants
 - Windows Update et NVIDIA, pendant l'analyse des pilotes
 
 Aucun numéro de série n'est envoyé.

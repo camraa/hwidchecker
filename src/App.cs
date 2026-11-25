@@ -26,8 +26,8 @@ using Microsoft.Win32;
 [assembly: AssemblyProduct("HWID Checker")]
 [assembly: AssemblyCompany("1skf")]
 [assembly: AssemblyCopyright("Made by 1skf (Discord)")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
 
 namespace HwidChecker
@@ -38,6 +38,7 @@ namespace HwidChecker
         public double Glass { get; set; }   // 0 = transparent, 1 = teinte
         public bool Mask { get; set; }
         public string Lang { get; set; }    // fr ou en ; vide = langue de Windows
+        public bool SkipUpdateCheck { get; set; }
         public string ReferenceDate { get; set; }
         public Dictionary<string, string> Reference { get; set; }
 
@@ -75,7 +76,7 @@ namespace HwidChecker
         }
     }
 
-    public class App
+    public partial class App
     {
         static readonly FontFamily Mono = new FontFamily("SF Mono, Cascadia Mono, Consolas");
 
@@ -99,6 +100,8 @@ namespace HwidChecker
             { "compare", "M4 8.5 H19 M15.5 5 L19 8.5 L15.5 12 M20 15.5 H5 M8.5 12 L5 15.5 L8.5 19" },
             { "appearance", "M4 7 H11 M17 7 H20 M14 4.3 A2.7 2.7 0 1 1 14 9.7 A2.7 2.7 0 1 1 14 4.3 Z M4 17 H7 M13 17 H20 M10 14.3 A2.7 2.7 0 1 1 10 19.7 A2.7 2.7 0 1 1 10 14.3 Z" },
             { "link", "M10 14 L20 4 M14 4 H20 V10 M17.5 14 V18.5 A1.5 1.5 0 0 1 16 20 H5.5 A1.5 1.5 0 0 1 4 18.5 V8 A1.5 1.5 0 0 1 5.5 6.5 H10" },
+            { "game", "M8 8 H16 A5 5 0 0 1 21 13 V14.5 A3 3 0 0 1 15.6 16.3 L15 15.5 H9 L8.4 16.3 A3 3 0 0 1 3 14.5 V13 A5 5 0 0 1 8 8 Z M8.5 10.5 V13.5 M7 12 H10 M15.5 11 V11.1 M17.3 13 V13.1" },
+            { "live", "M3 12.5 H7 L9.5 6 L14 18 L16.5 12.5 H21" },
             { "search", "M10.5 4 A6.5 6.5 0 1 1 10.5 17 A6.5 6.5 0 1 1 10.5 4 Z M15.5 15.5 L20.5 20.5" },
             { "eye", "M2.5 12 C5 7.5 8.2 5.5 12 5.5 C15.8 5.5 19 7.5 21.5 12 C19 16.5 15.8 18.5 12 18.5 C8.2 18.5 5 16.5 2.5 12 Z M12 9 A3 3 0 1 1 12 15 A3 3 0 1 1 12 9 Z" },
             { "eyeoff", "M2.5 12 C5 7.5 8.2 5.5 12 5.5 C15.8 5.5 19 7.5 21.5 12 C19 16.5 15.8 18.5 12 18.5 C8.2 18.5 5 16.5 2.5 12 Z M12 9 A3 3 0 1 1 12 15 A3 3 0 1 1 12 9 Z M4.5 20 L19.5 4" },
@@ -248,9 +251,11 @@ namespace HwidChecker
                 loading = false;
                 btn.IsEnabled = Get<Button>("BtnCopy").IsEnabled = Get<Button>("BtnExport").IsEnabled = true;
             }
+            if (first) history.Record(report.Flatten(), report.Date);
             BuildSidebar();
             Render(first);
             CheckBios();
+            if (first && !cfg.SkipUpdateCheck) CheckUpdate(false);
             if (!first) ShowToast("Informations actualisées");
         }
 
@@ -317,7 +322,7 @@ namespace HwidChecker
 
         void Open(string url)
         {
-            try { System.Diagnostics.Process.Start(url); }
+            try { System.Diagnostics.Process.Start("explorer.exe", "\"" + url + "\""); } // l'explorateur ouvre le navigateur sans droits administrateur
             catch { Copy(url, "Aucun navigateur trouvé, lien copié"); }
         }
 
@@ -606,9 +611,15 @@ namespace HwidChecker
                     if (s.Category != cat) AddHeader(cat = s.Category);
                     AddItem(s.Key, s.Title, s.Icon, s.Color);
                 }
+            if (report != null)
+            {
+                AddItem("anticheat", "Anti-triche", "game", "#BF5AF2");
+                AddItem("live", "En direct", "live", "#FF9500");
+            }
             AddHeader("Outils");
             AddItem("drivers", "Pilotes", "refresh", "#FF375F");
-            AddItem("compare", "Comparaison", "compare", "#FF9F0A");
+            AddItem("compare", "Historique", "compare", "#FF9F0A");
+            if (report != null) AddItem("share", "Partager", "export", "#30B0C7");
             AddItem("resources", "Ressources", "link", "#0A84FF");
             AddItem("appearance", "Apparence", "appearance", "#636366");
         }
@@ -663,7 +674,10 @@ namespace HwidChecker
                 else if (page == "drivers") { p = DriversPage(); title = "Pilotes"; }
                 else if (page == "resources") { p = ResourcesPage(); title = "Ressources"; }
                 else if (report == null) { p = LoadingPage(); title = "Vue d’ensemble"; }
-                else if (page == "compare") { p = ComparePage(); title = "Comparaison"; }
+                else if (page == "compare") { p = ComparePage(); title = "Historique"; }
+                else if (page == "anticheat") { p = AntiCheatPage(); title = "Anti-triche"; }
+                else if (page == "live") { p = LivePage(); title = "En direct"; }
+                else if (page == "share") { p = SharePage(); title = "Partager"; }
                 else
                 {
                     var s = report.Sections.FirstOrDefault(x => x.Key == page);
@@ -713,6 +727,8 @@ namespace HwidChecker
         {
             var p = PageRoot();
 
+            if (newVersion != null) p.Children.Add(UpdateBanner());
+
             // En-tete : machine + empreinte
             var hero = new StackPanel { Margin = new Thickness(20) };
             var top = new StackPanel { Orientation = Orientation.Horizontal };
@@ -757,6 +773,14 @@ namespace HwidChecker
             string[] sys = { "Version de Windows", "Build", "Type de licence", "Activation", "Version du BIOS", "Date du firmware actuel", "Dernière mise à jour" };
             var all = report.Sections.Where(s => s.Key == "windows" || s.Key == "board").SelectMany(s => s.Groups).SelectMany(g => g.Fields).ToList();
             AddGroup(p, "Windows et BIOS", null, sys.Select(k => all.FirstOrDefault(f => f.Label == k)).Where(f => f != null).Select(f => (UIElement)Row(f, false)));
+
+            var disks = report.Sections.Where(s => s.Key == "storage").SelectMany(s => s.Groups)
+                .Select(g => new { g, f = g.Fields.FirstOrDefault(x => x.Label == "Santé") }).Where(x => x.f != null).ToList();
+            if (disks.Count > 0)
+                AddGroup(p, "Santé des disques", null, disks.Select(x => (UIElement)Row(new Field
+                {
+                    Label = x.g.Title + " · " + x.g.Sub, Value = x.f.Value, State = x.f.State, Help = x.f.Help
+                }, false)));
 
             var sec = report.Sections.FirstOrDefault(s => s.Key == "security");
             if (sec != null)
@@ -828,6 +852,7 @@ namespace HwidChecker
             foreach (var g in s.Groups)
                 AddGroup(p, g.Title, g.Sub, g.Fields.Select(f => (UIElement)Row(f, s.Key == "arp")));
             if (s.Groups.Count == 0) p.Children.Add(Note(s.Empty));
+            if (s.Key == "arp") p.Children.Insert(1, OuiCard());
             return p;
         }
 
@@ -917,6 +942,7 @@ namespace HwidChecker
                     Row(new Field { Label = "Avant", Value = x[1] ?? "Absent", IsId = x[1] != null }, false),
                     Row(new Field { Label = "Maintenant", Value = x[2] ?? "Absent", IsId = x[2] != null }, false)
                 });
+            HistoryList(p);
             return p;
         }
 
@@ -1125,6 +1151,18 @@ namespace HwidChecker
                 SettingRow("Thème", "Automatique suit le réglage clair ou sombre de Windows.", segBox),
                 SettingRow("Verre", "Règle la transparence de la fenêtre, qui laisse apparaître les couleurs du fond d’écran.", slide)
             });
+            var up = new StackPanel { Orientation = Orientation.Horizontal };
+            var st = Text(VersionText + " · " + L.T(updateState), 12.5, "Text2", false);
+            st.Margin = new Thickness(0, 0, 12, 0);
+            up.Children.Add(st);
+            up.Children.Add(Capsule("Vérifier", false, () => { CheckUpdate(true); Render(false); }));
+            var auto = new CheckBox { Style = (Style)w.Resources["Switch"], IsChecked = !cfg.SkipUpdateCheck };
+            auto.Click += (s, e) => { cfg.SkipUpdateCheck = auto.IsChecked != true; cfg.Save(); };
+            AddGroup(p, "Mises à jour", null, new[]
+            {
+                SettingRow("Version de HWID Checker", "Compare cette version à celles publiées sur GitHub. Rien n’est téléchargé ni installé sans vous.", up),
+                SettingRow("Vérifier au démarrage", "Interroge GitHub une fois à chaque lancement.", auto)
+            });
             AddGroup(p, "Confidentialité", null, new[]
             {
                 SettingRow("Masquer les identifiants", "Remplace les identifiants par des points à l’écran, pour une capture ou un partage. La copie et l’export gardent les vraies valeurs.", sw)
@@ -1181,7 +1219,7 @@ namespace HwidChecker
                 Set("Text", "#F2FFFFFF"); Set("Text2", "#A3FFFFFF"); Set("Text3", "#6EFFFFFF");
                 Set("Accent", "#0A84FF"); Set("Card", "#0FFFFFFF"); Set("CardBorder", "#12FFFFFF"); Set("Sep", "#17FFFFFF");
                 Set("Hover", "#14FFFFFF"); Set("Control", "#1FFFFFFF"); Set("Field", "#14FFFFFF"); Set("Dot", "#24FFFFFF");
-                Set("SwitchOff", "#33FFFFFF"); Set("Scroll", "#59FFFFFF"); Set("Tip", "#FF3A3A3D"); Set("LightOff", "#4DFFFFFF");
+                Set("SwitchOff", "#33FFFFFF"); Set("Scroll", "#59FFFFFF"); Set("Tip", "#FF3A3A3D"); Set("LightOff", "#4DFFFFFF"); Set("Surface", "#FF29292B");
                 Set("Glass", "#1AFFFFFF"); Set("GlassBase", "#8C2B2B2E"); Set("WindowRim", "#38FFFFFF");
                 Set("SidebarTint", Alpha("#2A2A2D", .45 + .53 * g)); Set("ContentTint", Alpha("#1C1C1E", .72 + .28 * g));
                 Rim("#66FFFFFF", "#14FFFFFF", "#33FFFFFF");
@@ -1191,7 +1229,7 @@ namespace HwidChecker
                 Set("Text", "#E6000000"); Set("Text2", "#A8000000"); Set("Text3", "#80000000");
                 Set("Accent", "#0A7AFF"); Set("Card", "#99FFFFFF"); Set("CardBorder", "#0F000000"); Set("Sep", "#14000000");
                 Set("Hover", "#0D000000"); Set("Control", "#14000000"); Set("Field", "#80FFFFFF"); Set("Dot", "#17000000");
-                Set("SwitchOff", "#26000000"); Set("Scroll", "#4D000000"); Set("Tip", "#FFFFFFFF"); Set("LightOff", "#2E000000");
+                Set("SwitchOff", "#26000000"); Set("Scroll", "#4D000000"); Set("Tip", "#FFFFFFFF"); Set("LightOff", "#2E000000"); Set("Surface", "#FFFAFAFB");
                 Set("Glass", "#66FFFFFF"); Set("GlassBase", "#99FFFFFF"); Set("WindowRim", "#33000000");
                 Set("SidebarTint", Alpha("#F0F0F4", .68 + .31 * g)); Set("ContentTint", Alpha("#F7F7F9", .84 + .16 * g));
                 Rim("#FFFFFFFF", "#26000000", "#B3FFFFFF");

@@ -521,7 +521,7 @@ namespace HwidChecker
         static Section Disks()
         {
             var s = new Section { Key = "storage", Category = "Matériel", Title = "Stockage (SSD, RAID)", Icon = "storage", Color = "#FF9500",
-                Description = "Numéro de série de chaque disque, état RAID et numéros de volume." };
+                Description = "Numéro de série et santé de chaque disque, état RAID et numéros de volume." };
             const string ns = @"root\Microsoft\Windows\Storage";
             var phys = Query("SELECT * FROM MSFT_PhysicalDisk", ns);
             string sys = SystemDiskIndex();
@@ -547,8 +547,9 @@ namespace HwidChecker
                     .Info("Type", type)
                     .Info("Interface", iface)
                     .Info("Capacité", Size(Num(o, "Size"), false))
-                    .Info("Micrologiciel", Str(o, "FirmwareRevision"))
-                    .WithDriver(Str(o, "PNPDeviceID")));
+                    .Info("Micrologiciel", Str(o, "FirmwareRevision")));
+                AddHealth(g, index, Str(o, "PNPDeviceID"), Num(ph, "HealthStatus"), ph != null);
+                g.WithDriver(Str(o, "PNPDeviceID"));
             }
 
             var pools = Query("SELECT * FROM MSFT_StoragePool WHERE IsPrimordial=FALSE", ns);
