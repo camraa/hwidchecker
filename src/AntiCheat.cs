@@ -43,6 +43,13 @@ namespace HwidChecker
             {
                 new AntiCheat
                 {
+                    Name = "Fortnite Cups (EAC)", Games = "Tous les tournois Fortnite sur PC",
+                    Url = "https://communities.epicgames.com/thread/new-fortnite-anti-cheat-pc-requirements-and-latest-legal-action/nIQN/17",
+                    Note = "Depuis le 19 février 2026, Epic exige Secure Boot, TPM et IOMMU pour tous les tournois sur PC. Les parties hors tournoi ne sont pas concernées. Certains tournois, comme les FNCS, ajoutent des conditions de compte."
+                }.Must("Secure Boot", "TPM 2.0", "IOMMU / VT-d"),
+
+                new AntiCheat
+                {
                     Name = "Riot Vanguard", Games = "VALORANT, League of Legends",
                     Url = "https://support.riotgames.com/en-us/riot/performance/vanguard-security-requirements",
                     Note = "Riot indique que Vanguard peut exiger ces protections selon la configuration du PC."
@@ -78,7 +85,7 @@ namespace HwidChecker
 
                 new AntiCheat
                 {
-                    Name = "Easy Anti-Cheat", Games = "Fortnite, Apex Legends, Rust…",
+                    Name = "Easy Anti-Cheat", Games = "Apex Legends, Rust…",
                     Url = "https://easy.ac/support/articles/additional-security-requirements",
                     Note = "Chaque développeur choisit ses exigences : elles varient d’un jeu à l’autre."
                 }.May("TPM 2.0", "Secure Boot"),

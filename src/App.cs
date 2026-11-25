@@ -26,8 +26,8 @@ using Microsoft.Win32;
 [assembly: AssemblyProduct("HWID Checker")]
 [assembly: AssemblyCompany("1skf")]
 [assembly: AssemblyCopyright("Made by 1skf (Discord)")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyFileVersion("1.1.1.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
 
 namespace HwidChecker

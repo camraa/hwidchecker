@@ -83,7 +83,7 @@ namespace HwidChecker
 
     public partial class App
     {
-        public const string VersionText = "1.1.0";
+        public const string VersionText = "1.1.1";
         const string Repo = "https://github.com/camraa/hwidchecker";
 
         // ================= anti-triche =================
@@ -445,7 +445,7 @@ namespace HwidChecker
             {
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 var req = (HttpWebRequest)WebRequest.Create("https://api.github.com/repos/camraa/hwidchecker/tags");
-                req.UserAgent = "HWID-Checker";
+                req.UserAgent = "HWID-Checker/" + VersionText;
                 req.Timeout = req.ReadWriteTimeout = 10000;
                 using (var resp = req.GetResponse())
                 using (var sr = new StreamReader(resp.GetResponseStream()))
@@ -461,7 +461,7 @@ namespace HwidChecker
             g.ColumnDefinitions.Add(new ColumnDefinition());
             g.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             g.Children.Add(Text("HWID Checker " + newVersion + " est disponible", 13, null, true));
-            var b = Capsule("Voir", true, () => Open(Repo + "/tree/v" + newVersion));
+            var b = Capsule("Voir", true, () => Open(Repo + "/releases/tag/v" + newVersion));
             Grid.SetColumn(b, 1);
             g.Children.Add(b);
             var card = Card(g);

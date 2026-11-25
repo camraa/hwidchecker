@@ -21,9 +21,6 @@ namespace HwidChecker
     /// <summary>Lecture des compteurs. Appele depuis un seul fil d'arriere-plan a la fois.</summary>
     public static class Live
     {
-        [DllImport("kernel32.dll")]
-        static extern bool GetSystemTimes(out long idle, out long kernel, out long user);
-
         [StructLayout(LayoutKind.Sequential)]
         class MemStatus
         {
@@ -43,7 +40,6 @@ namespace HwidChecker
         [DllImport("nvml.dll")] static extern int nvmlDeviceGetMemoryInfo(IntPtr dev, out Mem m);
         [DllImport("nvml.dll", CharSet = CharSet.Ansi)] static extern int nvmlDeviceGetName(IntPtr dev, StringBuilder name, uint len);
 
-        static long lastIdle, lastTotal;
         static IntPtr nv;
         static bool nvTried, zoneOff, engineOff;
         static double lastZone = double.NaN;
@@ -52,15 +48,7 @@ namespace HwidChecker
         public static Sample Read()
         {
             var s = new Sample();
-            long idle, kernel, user;
-            if (GetSystemTimes(out idle, out kernel, out user))
-            {
-                long total = kernel + user; // le temps noyau inclut l'inactivite
-                if (lastTotal > 0 && total > lastTotal)
-                    s.Cpu = Math.Max(0, Math.Min(100, 100.0 * (1 - (double)(idle - lastIdle) / (total - lastTotal))));
-                lastIdle = idle;
-                lastTotal = total;
-            }
+            s.Cpu = CpuLoad.Read();
             var m = new MemStatus();
             if (GlobalMemoryStatusEx(m))
             {

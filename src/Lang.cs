@@ -279,6 +279,8 @@ namespace HwidChecker
                 "Vérifier au démarrage", "Check at startup",
                 "Compare cette version à celles publiées sur GitHub. Rien n’est téléchargé ni installé sans vous.", "Compares this version with those published on GitHub. Nothing is downloaded or installed without you.",
                 "Interroge GitHub une fois à chaque lancement.", "Queries GitHub once at each launch.",
+                "Tous les tournois Fortnite sur PC", "All Fortnite tournaments on PC",
+                "Depuis le 19 février 2026, Epic exige Secure Boot, TPM et IOMMU pour tous les tournois sur PC. Les parties hors tournoi ne sont pas concernées. Certains tournois, comme les FNCS, ajoutent des conditions de compte.", "Since February 19, 2026, Epic requires Secure Boot, TPM and IOMMU for all PC tournaments. Non-tournament matches are not affected. Some tournaments, such as FNCS, add account conditions.",
                 // Explications
                 "Identifiant universel gravé dans la carte mère par le fabricant. C’est l’élément le plus utilisé pour reconnaître un PC : il survit au formatage et au changement de disque.", "Universal identifier stored in the motherboard by the manufacturer. It is the most widely used way to recognize a PC: it survives formatting and drive changes.",
                 "Numéro d’inventaire qu’une entreprise ou le fabricant peut inscrire dans le BIOS. Souvent vide sur un PC personnel.", "Inventory number a company or the manufacturer can store in the BIOS. Often empty on a personal PC.",

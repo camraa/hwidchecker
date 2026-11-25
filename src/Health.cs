@@ -175,7 +175,7 @@ namespace HwidChecker
             {
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 var req = (HttpWebRequest)WebRequest.Create(Source);
-                req.UserAgent = "Mozilla/5.0";
+                req.UserAgent = "HWID-Checker/" + App.VersionText; // identification honnete : l'IEEE refuse les faux navigateurs
                 req.Timeout = req.ReadWriteTimeout = 60000;
                 string csv;
                 using (var resp = req.GetResponse())

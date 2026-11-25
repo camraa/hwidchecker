@@ -390,7 +390,7 @@ namespace HwidChecker
         static string GetPage(string url)
         {
             var req = (HttpWebRequest)WebRequest.Create(url);
-            req.UserAgent = "Mozilla/5.0";
+            req.UserAgent = "HWID-Checker/" + App.VersionText;
             req.KeepAlive = false; // le catalogue renvoie des pages vides quand une connexion est reutilisee
             req.Timeout = req.ReadWriteTimeout = 25000;
             req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;

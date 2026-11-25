@@ -11,7 +11,7 @@ Lecteur d'identifiants matériels pour Windows 10 et 11, avec une interface insp
 - **Windows et BIOS** : version, type de licence, activation, version et date du BIOS, lien vers le dernier BIOS publié
 - **Pilotes** : version et date de chaque pilote, comparées à Windows Update, au catalogue Microsoft Update et à NVIDIA
 - **Santé des disques** : usure, température, heures de fonctionnement, erreurs (NVMe et SMART)
-- **Anti-triche** : conditions de Vanguard, FACEIT, Ricochet, EA Javelin, Easy Anti-Cheat et BattlEye, avec la page officielle
+- **Anti-triche** : conditions des tournois Fortnite, de Vanguard, FACEIT, Ricochet, EA Javelin, Easy Anti-Cheat et BattlEye, avec la page officielle
 - **En direct** : charge et températures du processeur, de la RAM et du GPU
 - **Historique** : référence enregistrée et changements détectés à chaque lancement
 - **Partager** : image du PC à coller dans Discord, identifiants masqués par défaut
