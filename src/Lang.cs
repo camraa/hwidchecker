@@ -62,7 +62,7 @@ namespace HwidChecker
                 "Afficher ou masquer les identifiants (Ctrl+H)", "Show or hide identifiers (Ctrl+H)", "Langue", "Language",
                 "Copier", "Copy", "Lecture du matériel…", "Reading hardware…",
                 "Informations actualisées", "Information refreshed", "Presse-papiers occupé, réessayez", "Clipboard busy, try again",
-                "Rapport complet copié", "Full report copied", "Rapport enregistré", "Report saved", "Empreinte copiée", "Fingerprint copied", "Copié", "Copied",
+                "Rapport complet copié", "Full report copied", "Rapport enregistré", "Report saved", "Empreinte copiée", "Fingerprint copied", "Copié", "Copied", "Pseudo Discord copié", "Discord username copied", "Copier le pseudo Discord", "Copy Discord username",
                 "Échec de l’enregistrement", "Could not save", "Texte", "Text", "Aucun navigateur trouvé, lien copié", "No browser found, link copied",
                 "Référence enregistrée", "Reference saved", "Impossible d’enregistrer la référence", "Could not save the reference",
                 // Descriptions

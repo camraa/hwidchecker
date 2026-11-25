@@ -24,6 +24,8 @@ using Microsoft.Win32;
 
 [assembly: AssemblyTitle("HWID Checker")]
 [assembly: AssemblyProduct("HWID Checker")]
+[assembly: AssemblyCompany("1skf")]
+[assembly: AssemblyCopyright("Made by 1skf (Discord)")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
@@ -162,6 +164,7 @@ namespace HwidChecker
 
             SetIcon("BtnMask", cfg.Mask ? "eyeoff" : "eye");
             SetIcon("BtnRefresh", "refresh"); SetIcon("BtnCopy", "copy"); SetIcon("BtnExport", "export");
+            Get<Button>("BtnCredit").Click += (s, e) => Copy("1skf", "Pseudo Discord copié");
             Get<Button>("BtnLang").Click += (s, e) => SetLang(L.English ? "fr" : "en");
             Get<Button>("BtnMask").Click += (s, e) => ToggleMask();
             Get<Button>("BtnRefresh").Click += (s, e) => Refresh();
@@ -221,6 +224,9 @@ namespace HwidChecker
                 b.ToolTip = t;
                 AutomationProperties.SetName(b, t);
             }
+            var credit = Get<Button>("BtnCredit");
+            credit.ToolTip = L.T("Copier le pseudo Discord");
+            AutomationProperties.SetName(credit, "Made by 1skf (Discord)");
             AutomationProperties.SetName(Get<Button>("BtnClose"), L.T("Fermer"));
             AutomationProperties.SetName(Get<Button>("BtnMin"), L.T("Réduire"));
             AutomationProperties.SetName(Get<Button>("BtnMax"), L.T("Agrandir"));
@@ -610,7 +616,7 @@ namespace HwidChecker
         void AddHeader(string t)
         {
             var b = Text(t, 11.5, "Text2", true);
-            b.Margin = new Thickness(8, 13, 0, 5);
+            b.Margin = new Thickness(8, 11, 0, 4);
             side.Children.Add(b);
         }
 

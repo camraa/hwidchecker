@@ -38,3 +38,7 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
 Utilise le compilateur C# livré avec Windows (.NET Framework 4.8).
+
+---
+
+Made by **1skf** sur Discord.
